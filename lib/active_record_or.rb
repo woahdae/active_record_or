@@ -7,8 +7,12 @@ module ActiveRecordOr
     end
 
     def method_missing(method, *args, &block)
+      last_left_constraint = @left.constraints.last
+      return @left.send(method, *args, &block) unless last_left_constraint
+
       raw_right = @left.unscoped.send(method, *args, &block)
-      or_based_constraints = @left.constraints.last.or(raw_right.constraints.last)
+
+      or_based_constraints = last_left_constraint.or(raw_right.constraints.last)
       right = @left.send(method, *args, &block)
       right.where_values = [or_based_constraints]
       right

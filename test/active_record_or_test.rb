@@ -48,5 +48,11 @@ describe ActiveRecord::Relation do
       to_harass.join_sql.must_equal(
        %(INNER JOIN "authors" ON "authors"."id" = "blogs"."author_id") )
     end
+
+    it "works with no conditions on the left side" do
+      sql = Blog.scoped.or.where(:name => 'Julian')
+
+      sql.to_sql.must_equal "SELECT \"blogs\".* FROM \"blogs\"  WHERE \"blogs\".\"name\" = 'Julian'"
+    end
   end
 end
